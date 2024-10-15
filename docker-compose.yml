@@ -1,0 +1,29 @@
+services:
+  blesta:
+    container_name: blesta
+    image: haluu/docker-blesta:5.10.2
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    networks:
+      - proxy
+      - blesta
+
+  mariadb:
+    container_name: blestadb
+    image: mariadb:8
+    restart: unless-stopped
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - blesta
+    environment:
+      - MYSQL_DATABASE=blesta
+      - MYSQL_USER=blesta
+      - MYSQL_PASSWORD=FANCY_PASSWORD
+      - MYSQL_ROOT_PASSWORD=FANCY_PASSWORD
+networks:
+  proxy:
+    external: true
+  blesta:
+    external: true
