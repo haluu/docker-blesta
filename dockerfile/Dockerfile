@@ -2,8 +2,8 @@ FROM  alpine:3.20
 LABEL Maintainer="Alexander Luu <alexander@luu.no>" \
       Description="Blesta image for Docker - using Nginx, PHP82, ioncube on Alpine Linux"
 
-ENV BLESTA_VERSION=5.10.2 \
-		DOWNLOAD_ID=254
+ENV BLESTA_VERSION=5.12.2 \
+		DOWNLOAD_ID=279
 
 ARG GID=1000
 ARG UID=1000
