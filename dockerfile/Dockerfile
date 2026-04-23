@@ -50,10 +50,10 @@ RUN cd /tmp \
 		&& rm ioncube.tar.gz
 
 # Copy configs
-COPY config/nginx.conf /etc/nginx/nginx.conf
-COPY config/fpm-pool.conf /etc/php82/php-fpm.d/www.conf
-COPY config/php.ini /etc/php82/conf.d/custom.ini
-COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY dockerfile/config/nginx.conf /etc/nginx/nginx.conf
+COPY dockerfile/config/fpm-pool.conf /etc/php82/php-fpm.d/www.conf
+COPY dockerfile/config/php.ini /etc/php82/conf.d/custom.ini
+COPY dockerfile/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Change working directory
 WORKDIR /var/www
