@@ -1,0 +1,53 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Read BLESTA_VERSION from Dockerfile
+        id: version
+        run: |
+          BLESTA_VERSION=$(grep -E '^ENV BLESTA_VERSION=' dockerfile/Dockerfile | head -n1 | sed -E 's/^ENV BLESTA_VERSION=([^[:space:]\\]+).*/\1/')
+          if [ -z "$BLESTA_VERSION" ]; then
+            echo "Failed to read BLESTA_VERSION from dockerfile/Dockerfile"
+            exit 1
+          fi
+          echo "blesta_version=$BLESTA_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Extract Docker image metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ vars.DOCKER_USERNAME }}/docker-blesta
+          tags: |
+            type=raw,value=${{ steps.version.outputs.blesta_version }}
+            type=raw,value=latest
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: dockerfile/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          provenance: true
+          sbom: true
